@@ -16,6 +16,14 @@ router.post('/api/todos', async (request) => {
 	return new Response('Creating Todo: ' + JSON.stringify(content));
 });
 
+router.post('/api/webhook', async (request) => {
+	const content = await request.json();
+
+	console.log(content);
+
+	return new Response('Creating Todo: ' + JSON.stringify(content));
+});
+
 // 404 for everything else
 router.all('*', () => new Response('Not Found.', { status: 404 }));
 
