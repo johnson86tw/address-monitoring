@@ -16,10 +16,14 @@ router.post('/api/todos', async (request) => {
 	return new Response('Creating Todo: ' + JSON.stringify(content));
 });
 
-router.post('/api/webhook', async (request) => {
+router.post('/api/webhook', async (request, env: Env) => {
 	const content = await request.json();
 
-	console.log(content);
+	if (content.webhookId !== env.WEBHOOK_ID) {
+		return new Response('Not Authorized', { status: 401 });
+	}
+
+	console.log('hello world');
 
 	return new Response('Creating Todo: ' + JSON.stringify(content));
 });
