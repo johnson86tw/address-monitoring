@@ -2,6 +2,10 @@
 // After adding bindings to `wrangler.toml`, regenerate this interface via `npm run cf-typegen`
 interface Env {
 	WEBHOOK_ID: string;
-	WEBPUSH_PRIV_KEY: string;
-	SUBSCRIPTIONS: KVNamespace;
+
+	VAPID_SUBJECT: string;
+	VAPID_PUBLIC_KEY: string;
+	VAPID_PRIVATE_KEY: string;
+
+	SUBSCRIPTIONS_DB: KVNamespace;
 }

@@ -1,22 +1,23 @@
 {
-  "name": "address-monitoring",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
-    "start": "wrangler dev",
-    "cf-typegen": "wrangler types"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240712.0",
-    "@types/web-push": "^3.6.3",
-    "itty-router": "^3.0.12",
-    "typescript": "^5.5.2",
-    "wrangler": "^3.60.3"
-  },
-  "dependencies": {
-    "@block65/webcrypto-web-push": "^1.0.0",
-    "web-push": "^3.6.7"
-  }
+	"name": "address-monitoring",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"cf-typegen": "wrangler types"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20240712.0",
+		"@types/web-push": "^3.6.3",
+		"itty-router": "^3.0.12",
+		"typescript": "^5.5.2",
+		"wrangler": "^3.60.3"
+	},
+	"dependencies": {
+		"@block65/webcrypto-web-push": "^1.0.0",
+		"web-push": "^3.6.7"
+	}
 }

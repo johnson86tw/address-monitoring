@@ -25,12 +25,16 @@ router.post('/api/save-subscription', async (request, env: Env) => {
 		const timestamp = Date.now();
 		const key = timestamp.toString();
 
-		await env.SUBSCRIPTIONS.put(key, JSON.stringify(content));
+		await env.SUBSCRIPTIONS_DB.put(key, JSON.stringify(content));
 
-		return new Response(`Saved subscription: ${key}`, { status: 200, headers });
+		const response = {
+			message: `Saved subscription: ${key}`,
+		};
+
+		return new Response(JSON.stringify(response), { status: 200, headers });
 	} catch (err: any) {
 		console.error('Failed to save subscription', err);
-		return new Response(err, { status: 500, headers });
+		return new Response(JSON.stringify({ message: err.message }), { status: 500, headers });
 	}
 });
 
@@ -42,19 +46,19 @@ router.post('/api/webhook', async (request, env: Env) => {
 		const content = await request.json();
 
 		if (content.webhookId !== env.WEBHOOK_ID) {
-			return new Response('Not Authorized', { status: 401, headers });
+			return new Response(JSON.stringify({ message: 'Not Authorized' }), { status: 401, headers });
 		}
 
-		const { keys } = await env.SUBSCRIPTIONS.list();
+		const { keys } = await env.SUBSCRIPTIONS_DB.list();
 
 		const vapid: VapidKeys = {
-			subject: undefined,
-			publicKey: undefined,
-			privateKey: env.WEBPUSH_PRIV_KEY,
+			subject: env.VAPID_SUBJECT,
+			publicKey: env.VAPID_PUBLIC_KEY,
+			privateKey: env.VAPID_PRIVATE_KEY,
 		};
 
 		for (const key of keys) {
-			const sub = await env.SUBSCRIPTIONS.get(key.name);
+			const sub = await env.SUBSCRIPTIONS_DB.get(key.name);
 			if (!sub) continue;
 
 			const subscription: PushSubscription = JSON.parse(sub);
@@ -73,10 +77,14 @@ router.post('/api/webhook', async (request, env: Env) => {
 			}
 		}
 
-		return new Response('Webhook received: ' + JSON.stringify(content), { status: 200, headers });
+		const response = {
+			message: JSON.stringify(content),
+		};
+
+		return new Response(JSON.stringify(response), { status: 200, headers });
 	} catch (err: any) {
 		console.error(err);
-		return new Response(err, { status: 500, headers });
+		return new Response(JSON.stringify({ message: err.message }), { status: 500, headers });
 	}
 });
 
