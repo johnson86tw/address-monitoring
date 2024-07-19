@@ -1,10 +1,24 @@
 import { Router } from 'itty-router';
 import { buildPushPayload, type PushSubscription, type PushMessage, type VapidKeys } from '@block65/webcrypto-web-push';
 
-// now let's create a router (note the lack of "new")
 const router = Router();
 
+router.options('/api/*', () => {
+	// Handle CORS preflight request
+	return new Response(null, {
+		status: 204,
+		headers: {
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+			'Access-Control-Allow-Headers': 'Content-Type',
+		},
+	});
+});
+
 router.post('/api/save-subscription', async (request, env: Env) => {
+	const headers = new Headers();
+	headers.set('Access-Control-Allow-Origin', '*');
+
 	try {
 		const content = await request.json();
 
@@ -13,19 +27,22 @@ router.post('/api/save-subscription', async (request, env: Env) => {
 
 		await env.SUBSCRIPTIONS.put(key, JSON.stringify(content));
 
-		return new Response(`Saved subscription: ${key}`, { status: 200 });
+		return new Response(`Saved subscription: ${key}`, { status: 200, headers });
 	} catch (err: any) {
 		console.error('Failed to save subscription', err);
-		return new Response(err, { status: 500 });
+		return new Response(err, { status: 500, headers });
 	}
 });
 
 router.post('/api/webhook', async (request, env: Env) => {
+	const headers = new Headers();
+	headers.set('Access-Control-Allow-Origin', '*');
+
 	try {
 		const content = await request.json();
 
 		if (content.webhookId !== env.WEBHOOK_ID) {
-			return new Response('Not Authorized', { status: 401 });
+			return new Response('Not Authorized', { status: 401, headers });
 		}
 
 		const { keys } = await env.SUBSCRIPTIONS.list();
@@ -56,10 +73,10 @@ router.post('/api/webhook', async (request, env: Env) => {
 			}
 		}
 
-		return new Response('Webhook received: ' + JSON.stringify(content));
+		return new Response('Webhook received: ' + JSON.stringify(content), { status: 200, headers });
 	} catch (err: any) {
 		console.error(err);
-		return new Response(err, { status: 500 });
+		return new Response(err, { status: 500, headers });
 	}
 });
 

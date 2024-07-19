@@ -23,6 +23,18 @@ export default {
 		// You'll find it helpful to parse the request.url string into a URL object. Learn more at https://developer.mozilla.org/en-US/docs/Web/API/URL
 		const url = new URL(request.url);
 
+		// Handle CORS preflight requests globally
+		if (request.method === 'OPTIONS') {
+			return new Response(null, {
+				status: 204,
+				headers: {
+					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+					'Access-Control-Allow-Headers': 'Content-Type',
+				},
+			});
+		}
+
 		// You can get pretty far with simple logic like if/switch-statements
 		switch (url.pathname) {
 			case '/redirect':
@@ -43,7 +55,7 @@ export default {
       <li><code><a href="/redirect?redirectUrl=https://example.com/">/redirect?redirectUrl=https://example.com/</a></code>,</li>
       <li><code><a href="/proxy?modify&proxyUrl=https://example.com/">/proxy?modify&proxyUrl=https://example.com/</a></code>, or</li>
       <li><code><a href="/api/todos">/api/todos</a></code></li>`,
-			{ headers: { 'Content-Type': 'text/html' } }
+			{ headers: { 'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*' } }
 		);
 	},
 } satisfies ExportedHandler<Env>;
